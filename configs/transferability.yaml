@@ -1,0 +1,23 @@
+# configs/transferability.yaml
+defaults:
+  - base
+  - _self_
+
+project:
+  name: "plant-trait-retrieval-transfer"
+
+data:
+  transferability:
+    enabled: true
+    source_domain_col: "dataset"
+    target_domain: "target_site"
+    run_all_domains: true
+    val_fraction: 0.2
+
+training:
+  epochs: 100
+  learning_rate: 5.0e-4          # lower LR for fine-tuning
+
+logging:
+  wandb:
+    tags: ["efficientnet1d", "hyperspectral", "transferability"]

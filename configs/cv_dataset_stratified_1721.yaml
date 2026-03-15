@@ -1,0 +1,39 @@
+defaults:
+  - base
+  - _self_
+
+data:
+  data_path: "data/processed/DB_50_Meta_EC_with_locations_clean1721.csv"
+  use_wavelength_range: true
+  spectra_wl_start: 400
+  spectra_wl_end: 2450
+  n_spectra_bands: 1721
+  n_traits: 20
+  trait_names:
+    - "Anth_area_ug_cm2"
+    - "Boron_area_mg_cm2"
+    - "C_area_mg_cm2"
+    - "Ca_area_mg_cm2"
+    - "Car_area_ug_cm2"
+    - "Cellulose_mg_cm2"
+    - "Chl_area_ug_cm2"
+    - "Cu_area_mg_cm2"
+    - "EWT_mg_cm2"
+    - "Fiber_mg_cm2"
+    - "LAI_m2_m2"
+    - "LMA_g_m2"
+    - "Lignin_mg_cm2"
+    - "Mg_area_mg_cm2"
+    - "Mn_area_mg_cm2"
+    - "NSC_mg_cm2"
+    - "N_area_mg_cm2"
+    - "P_area_mg_cm2"
+    - "Potassium_area_mg_cm2"
+    - "S_area_mg_cm2"
+  cv_split_strategy: "stratified"
+  cv_stratify_col: "dataset"
+  cv_splits_dir: "data/splits/stratified_dataset_5fold_seed42"
+
+model:
+  input_length: 1721
+  n_outputs: 20

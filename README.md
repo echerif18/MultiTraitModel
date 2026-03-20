@@ -193,45 +193,106 @@ make sanity
 
 ---
 
-## 6 — Run the experiments
+## 6 — Reproducible runbook (local)
 
-### 6a — 5-Fold Cross-Validation (local)
-
-```bash
-python -m plant_trait_retrieval.training.train_cv \
-    data.data_path=data/processed/dataset.csv
-```
-
-Or via Make:
-```bash
-make train-cv DATA_PATH=data/processed/dataset.csv
-```
-
-Outputs are saved to:
-```
-results/cv/
-├── fold_0/
-│   ├── scalers/         ← fitted spectra_scaler.pkl + target_scaler.pkl
-│   ├── eval/            ← fold0_val_metrics.csv, predictions.npy, targets.npy
-│   └── history.csv      ← train/val loss per epoch
-├── fold_1/ … fold_4/
-└── all_fold_metrics.csv
-```
-
-### 6b — Transferability experiment (local)
+### 6a — Train baseline on all data (single global model)
 
 ```bash
-python -m plant_trait_retrieval.training.train_transfer \
-    --config-name transferability \
-    data.data_path=data/processed/dataset.csv \
-    data.transferability.target_domain=MyTargetSite
+poetry run python -m plant_trait_retrieval.training.train_full \
+  --config-name full_train_1522 \
+  data.data_path=data/processed/DB_50_Meta_EC_with_locations_clean1522.csv
 ```
 
-Or via Make:
+Main outputs:
+- `results/full_train_1522/model_full_1522.pt`
+- `results/full_train_1522/scalers/`
+
+### 6b — Baseline CV evaluation (paper-style)
+
 ```bash
-make train-transfer \
-    DATA_PATH=data/processed/dataset.csv \
-    TARGET_DOMAIN=MyTargetSite
+poetry run python -m plant_trait_retrieval.training.train_cv \
+  --config-name study1_baseline_cv_1721_paper \
+  data.data_path=data/processed/DB_50_Meta_EC_with_locations_clean1721.csv
+```
+
+Optional transferability-style split with same baseline family:
+
+```bash
+poetry run python -m plant_trait_retrieval.training.train_cv \
+  --config-name study1_transferability_1721_paper \
+  data.data_path=data/processed/DB_50_Meta_EC_with_locations_clean1721.csv
+```
+
+### 6c — Transferability training (explicit target domain)
+
+```bash
+poetry run python -m plant_trait_retrieval.training.train_transfer \
+  --config-name study1_transferability_1721_paper \
+  data.data_path=data/processed/DB_50_Meta_EC_with_locations_clean1721.csv \
+  data.transferability.target_domain=<TARGET_DOMAIN>
+```
+
+### 6d — Uncertainty training (3 steps)
+
+Step 1: transferability artifacts (train/calibration/test split + baseline predictions + embeddings/dist references)
+
+```bash
+poetry run python -m plant_trait_retrieval.experiments.uncertainty_eval \
+  --config-name study2_uncertainty_1522 \
+  experiment.stage=transfer \
+  experiment.transfer.run_all_domains=true \
+  experiment.transfer.domain_col=dataset \
+  data.data_path=data/processed/DB_50_Meta_EC_with_locations_clean1522.csv
+```
+
+Step 2: global model on all data (used for scene inference artifacts)
+
+```bash
+poetry run python -m plant_trait_retrieval.training.train_full \
+  --config-name full_train_1522 \
+  data.data_path=data/processed/DB_50_Meta_EC_with_locations_clean1522.csv
+```
+
+Step 3: distance features + qu95 quantile regression training
+
+```bash
+poetry run python -m plant_trait_retrieval.experiments.uncertainty_eval \
+  --config-name study2_uncertainty_1522 \
+  experiment.stage=distance \
+  experiment.transfer.run_all_domains=true \
+  experiment.transfer.domain_col=dataset \
+  data.data_path=data/processed/DB_50_Meta_EC_with_locations_clean1522.csv
+```
+
+### 6e — Run each app separately
+
+Model-zoo / baseline app:
+
+```bash
+poetry run python -m plant_trait_retrieval.apps.gradio_model_zoo
+```
+
+Baseline + uncertainty tabular app:
+
+```bash
+poetry run python -m plant_trait_retrieval.apps.gradio_baseline_uncertainty
+```
+
+Scene TIFF uncertainty app:
+
+```bash
+poetry run python -m plant_trait_retrieval.apps.gradio_disun_scene
+```
+
+### 6f — Scene inference without UI
+
+```bash
+poetry run python -m plant_trait_retrieval.experiments.uncertainty_scene_infer \
+  --config-name scene_infer_uncertainty \
+  inference.input_type=tif \
+  inference.scene_tif=<PATH_TO_SCENE_TIF> \
+  inference.sensor_bands_csv=<PATH_TO_SENSOR_BANDS_CSV> \
+  inference.output_path=results/scene_inference/predictions_uncertainty_scene.csv
 ```
 
 ---

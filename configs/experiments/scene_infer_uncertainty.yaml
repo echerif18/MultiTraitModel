@@ -1,0 +1,43 @@
+defaults:
+  - _self_
+
+inference:
+  input_type: "csv"  # csv | tif
+  scene_csv: "data/processed/scene_1522.csv"
+  scene_tif: null
+  sensor_bands_csv: null
+  output_path: "results/scene_inference/predictions_uncertainty_scene.csv"
+  output_pred_tif: null
+  output_unc_tif: null
+
+  # Artifacts from train_full.py
+  model_artifact: "results/full_train_1522/model_full_1522.pt"
+  scalers_dir: "results/full_train_1522/scalers"
+
+  # Artifacts from uncertainty_eval.py for a selected target domain
+  quantile_models_path: "results/experiments/study2_uncertainty_1522/target_1/quantile_models.pkl"
+  distance_reference_npz: "results/experiments/study2_uncertainty_1522/target_1/distance_reference.npz"
+
+  predictor_subset:
+    - "qu50_dist_EmbLCos_nor"
+    - "qu50_dist_SpCos_nor"
+
+  pred_batch_size: 512
+
+  distance:
+    n_neighbors: 50
+    quantile: 0.5
+    normalize_vectors: true
+    normalize_by_train: true
+    use_average: false
+    gpu: -1
+    require_faiss: true
+    embedding_batch_size: 512
+
+  preprocessing:
+    divide_by: 10000.0
+    corrupted_pixel_offset: 10.0
+    inval_1522: [1251, 1530, 1801, 2051]
+    polyorder: 1
+    deriv: false
+    window: 65

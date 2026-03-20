@@ -1,0 +1,27 @@
+defaults:
+  - /base
+  - _self_
+
+experiment:
+  output_dir: "results/experiments/baseline"
+  wandb: false
+  model_variants: ["efficientnet1d_b0", "single_cnn1d", "plsr"]
+  data_variants: ["sparse", "filled"]
+  plsr:
+    max_components: 30
+  tuning:
+    enabled: true
+    n_trials: 8
+    n_folds: 3
+    max_epochs_per_trial: 40
+    patience_per_trial: 10
+    search_space:
+      learning_rate: [0.001, 0.0005, 0.0002]
+      weight_decay: [0.0001, 0.00005, 0.00001]
+      dropout_rate: [0.1, 0.2, 0.3]
+      huber_delta: [0.7, 1.0, 1.2]
+      batch_size: [32, 64, 128]
+
+logging:
+  wandb:
+    enabled: false

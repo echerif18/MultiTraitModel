@@ -1,0 +1,80 @@
+# configs/base.yaml
+defaults:
+  - _self_
+
+project:
+  name: "plant-trait-retrieval"
+  seed: 42
+
+data:
+  data_path: "data/processed/dataset.csv"
+  use_wavelength_range: true
+  spectra_wl_start: 400
+  spectra_wl_end: 2450
+  spectra_cols_start: 0          # positional fallback if use_wavelength_range=false
+  n_spectra_bands: 1721
+  n_traits: 20
+  trait_names: null              # list of 20 trait names; null = auto-detect
+  cv_split_strategy: "kfold"     # 'kfold' or 'stratified'
+  cv_stratify_col: "dataset"     # used when cv_split_strategy='stratified'
+  scale_spectra: false           # default: raw spectra are used as-is
+  power_transform: true          # apply PowerTransformer to targets
+  power_method: "yeo-johnson"    # 'yeo-johnson' or 'box-cox'
+  cv_splits_dir: "data/splits"   # directory with pre-computed CV index files
+  n_folds: 5
+  transferability:
+    enabled: true
+    source_domain_col: "dataset"  # column identifying source/target domains
+    target_domain: "target_site"  # value in source_domain_col for target site
+    run_all_domains: false        # if true, loop over every unique domain as test once
+    val_fraction: 0.2             # validation fraction taken from source (train) data
+
+model:
+  name: "efficientnet1d_b0"
+  in_channels: 1
+  input_length: 1721
+  n_outputs: 20
+  width_coefficient: 1.0
+  depth_coefficient: 1.0
+  dropout_rate: 0.2
+  drop_connect_rate: 0.2
+
+training:
+  epochs: 200
+  batch_size: 64
+  learning_rate: 1.0e-3
+  use_sample_weights: true       # dataset-frequency sample weights in CV training
+  augmentation:
+    enabled: true
+    aug_prob: 0.5
+    betashift: 0.01
+    slopeshift: 0.01
+    multishift: 0.1
+  weight_decay: 1.0e-4
+  scheduler: "cosine"            # 'cosine' | 'step' | 'plateau'
+  warmup_epochs: 5
+  patience: 30                   # early stopping patience
+  loss:
+    name: "huber"
+    delta: 1.0
+  mixed_precision: true
+  num_workers: 4
+  pin_memory: true
+  gradient_clip: 1.0
+
+logging:
+  wandb:
+    enabled: true
+    entity: null                  # your wandb entity/username
+    project: "plant-trait-retrieval"
+    tags: ["efficientnet1d", "hyperspectral", "multi-trait"]
+  log_interval: 10               # log every N batches
+  checkpoint_dir: "checkpoints"
+  save_top_k: 3                  # keep best K checkpoints per fold
+
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}

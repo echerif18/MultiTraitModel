@@ -348,6 +348,41 @@ python -m plant_trait_retrieval.evaluation.evaluate \
 
 ---
 
+## 11 — Unified studies (merged repositories)
+
+This repo now centralizes the four projects:
+- `multi-traitretrieval` → baseline training/evaluation (`experiments/baseline.py`)
+- `Multi_trait_Uncertainty` → distance-based uncertainty (`experiments/uncertainty_eval.py`)
+- `HyspectraSSL` → SSL benchmark (MAE + downstream, `experiments/ssl_benchmark.py`)
+- `multiTraitPredictions` → Gradio app workflows (`src/plant_trait_retrieval/apps/`)
+
+Run commands:
+
+```bash
+# Study 1: baseline (EfficientNet-B0 + Single CNN + PLSR, sparse vs filled, CV tuning)
+poetry run python -m plant_trait_retrieval.experiments.baseline --config-name baseline data.data_path=data/processed/dataset.csv
+
+# Study 2: distance-based uncertainty
+poetry run python -m plant_trait_retrieval.experiments.uncertainty_eval --config-name uncertainty data.data_path=data/processed/dataset.csv
+
+# Study 3/4: SSL comparison
+poetry run python -m plant_trait_retrieval.experiments.ssl_benchmark --config-name ssl_benchmark data.data_path=data/processed/dataset.csv
+
+# EDA / quality filtering
+poetry run python scripts/eda_quality_check.py --data_path data/processed/dataset.csv --out_dir results/eda
+
+# Gradio apps
+poetry run python -m plant_trait_retrieval.apps.gradio_baseline_uncertainty
+poetry run python -m plant_trait_retrieval.apps.gradio_model_zoo
+```
+
+SLURM scripts for the merged studies:
+- `slurm/baseline_tuning.sh`
+- `slurm/uncertainty_distance.sh`
+- `slurm/ssl_benchmark.sh`
+
+---
+
 ## Architecture summary
 
 | Component | Detail |

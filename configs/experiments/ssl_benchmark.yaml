@@ -1,0 +1,20 @@
+defaults:
+  - /base
+  - _self_
+
+experiment:
+  output_dir: "results/experiments/ssl_benchmark"
+  unlabeled_data_path: null
+  methods: ["supervised_effnet", "mae_linear_probe", "mae_finetune"]
+  ssl:
+    mae_emb_dim: 256
+    mask_ratio: 0.4
+    pretrain_epochs: 20
+    pretrain_batch_size: 256
+    pretrain_lr: 0.001
+    linear_probe_alpha: 1.0
+    finetune_epochs: 40
+
+logging:
+  wandb:
+    enabled: false

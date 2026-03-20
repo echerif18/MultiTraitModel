@@ -1,0 +1,32 @@
+defaults:
+  - baseline
+  - _self_
+
+experiment:
+  output_dir: "results/experiments/study1_baseline_suite_1721"
+  model_variants: ["efficientnet1d_b0", "single_cnn1d", "plsr"]
+  data_variants: ["sparse", "filled"]
+  tuning:
+    enabled: true
+    n_trials: 12
+    n_folds: 3
+    max_epochs_per_trial: 50
+    patience_per_trial: 12
+
+project:
+  name: "study1-baseline-suite-1721"
+
+data:
+  data_path: "data/processed/DB_50_Meta_EC_with_locations_clean1721.csv"
+  n_spectra_bands: 1721
+  use_wavelength_range: true
+  spectra_wl_start: 400
+  spectra_wl_end: 2450
+
+model:
+  input_length: 1721
+  n_outputs: 20
+
+logging:
+  wandb:
+    enabled: false

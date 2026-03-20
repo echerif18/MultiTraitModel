@@ -1,0 +1,89 @@
+defaults:
+  - uncertainty
+  - _self_
+
+project:
+  name: "study2-uncertainty-1522"
+  seed: 42
+
+experiment:
+  output_dir: "results/experiments/study2_uncertainty_1522"
+  base_model: "efficientnet1d_b0"
+  plsr_components: 30
+  transfer:
+    domain_col: "dataset"
+    run_all_domains: true
+    target_domain: "target_site"
+    calibration_fraction: 0.2
+  distance:
+    n_neighbors: 50
+    quantile: 0.5
+    normalize_vectors: true
+    normalize_by_train: true
+    use_average: false
+    gpu: 0
+    require_faiss: true
+    embedding_batch_size: 512
+  disun:
+    predictor_subset:
+      - "qu50_dist_EmbLCos_nor"
+      - "qu50_dist_SpCos_nor"
+    quantile: 0.95
+    alpha: 0.0
+    transform_x: true
+    transform_y: true
+    x_transform_method: yeo-johnson
+    y_transform_method: yeo-johnson
+
+data:
+  data_path: "data/processed/DB_50_Meta_EC_with_locations_clean1522.csv"
+  use_wavelength_range: true
+  spectra_wl_start: 400
+  spectra_wl_end: 2450
+  spectra_cols_start: 0
+  n_spectra_bands: 1522
+  n_traits: 20
+  trait_names:
+    - "Anth_area_ug_cm2"
+    - "Boron_area_mg_cm2"
+    - "C_area_mg_cm2"
+    - "Ca_area_mg_cm2"
+    - "Car_area_ug_cm2"
+    - "Cellulose_mg_cm2"
+    - "Chl_area_ug_cm2"
+    - "Cu_area_mg_cm2"
+    - "EWT_mg_cm2"
+    - "Fiber_mg_cm2"
+    - "LAI_m2_m2"
+    - "LMA_g_m2"
+    - "Lignin_mg_cm2"
+    - "Mg_area_mg_cm2"
+    - "Mn_area_mg_cm2"
+    - "NSC_mg_cm2"
+    - "N_area_mg_cm2"
+    - "P_area_mg_cm2"
+    - "Potassium_area_mg_cm2"
+    - "S_area_mg_cm2"
+
+model:
+  name: "efficientnet1d_b0"
+  input_length: 1522
+  n_outputs: 20
+  dropout_rate: 0.2
+  drop_connect_rate: 0.2
+
+training:
+  epochs: 150
+  batch_size: 64
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-4
+  scheduler: "cosine"
+  patience: 30
+  loss:
+    name: "huber"
+    delta: 1.0
+  mixed_precision: true
+
+logging:
+  wandb:
+    enabled: false

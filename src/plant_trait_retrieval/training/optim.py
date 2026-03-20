@@ -54,9 +54,15 @@ def build_scheduler(optimizer: Optimizer, cfg: DictConfig):
         return scheduler, False
 
     elif name == "plateau":
-        scheduler = ReduceLROnPlateau(
-            optimizer, mode="min", factor=0.5, patience=10, verbose=True
-        )
+        # PyTorch compatibility: `verbose` is not supported in some versions.
+        try:
+            scheduler = ReduceLROnPlateau(
+                optimizer, mode="min", factor=0.5, patience=10, verbose=True
+            )
+        except TypeError:
+            scheduler = ReduceLROnPlateau(
+                optimizer, mode="min", factor=0.5, patience=10
+            )
         return scheduler, True
 
     else:

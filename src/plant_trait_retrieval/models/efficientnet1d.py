@@ -233,12 +233,17 @@ class EfficientNet1d(nn.Module):
         self._initialize_weights()
 
     # ------------------------------------------------------------------
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """x: (B, 1, L)  →  (B, n_outputs)"""
+    def extract_features(self, x: torch.Tensor) -> torch.Tensor:
+        """Return pooled feature embedding before dropout/regression head."""
         x = self.stem(x)
         x = self.blocks(x)
         x = self.head_conv(x)
-        x = self.pool(x).squeeze(-1)   # (B, head_ch)
+        return self.pool(x).squeeze(-1)
+
+    # ------------------------------------------------------------------
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """x: (B, 1, L)  →  (B, n_outputs)"""
+        x = self.extract_features(x)
         x = self.dropout(x)
         return self.fc(x)
 

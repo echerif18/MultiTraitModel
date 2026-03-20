@@ -69,6 +69,7 @@ def main(cfg: DictConfig) -> None:
 
     # ── Load data ────────────────────────────────────────────────────────
     spectra, targets, spectra_cols, trait_cols, df = load_dataset(cfg)
+    original_row_idx = np.arange(len(df), dtype=np.int64)
     # Drop rows that cannot be used safely for training.
     valid_target_mask = np.isfinite(targets).any(axis=1)
     valid_spectra_mask = np.isfinite(spectra).all(axis=1)
@@ -76,6 +77,29 @@ def main(cfg: DictConfig) -> None:
     dropped_bad_targets = int((~valid_target_mask).sum())
     dropped_bad_spectra = int((~valid_spectra_mask).sum())
     dropped_rows = int((~valid_row_mask).sum())
+
+    filtered_df_export = df.loc[valid_row_mask].copy()
+    filtered_df_export.insert(0, "original_row_index", original_row_idx[valid_row_mask])
+
+    dropped_df_export = df.loc[~valid_row_mask].copy()
+    if dropped_rows > 0:
+        dropped_df_export.insert(0, "original_row_index", original_row_idx[~valid_row_mask])
+        dropped_df_export.insert(1, "drop_all_nan_or_nonfinite_targets", (~valid_target_mask)[~valid_row_mask])
+        dropped_df_export.insert(2, "drop_nonfinite_spectra", (~valid_spectra_mask)[~valid_row_mask])
+
+    export_filtered_csv = cfg.data.get("export_filtered_csv", None)
+    export_dropped_csv = cfg.data.get("export_dropped_csv", None)
+    if export_filtered_csv:
+        export_filtered_path = Path(str(export_filtered_csv))
+        export_filtered_path.parent.mkdir(parents=True, exist_ok=True)
+        filtered_df_export.to_csv(export_filtered_path, index=False)
+        logger.info(f"Exported filtered pre-CV dataset to: {export_filtered_path}")
+    if export_dropped_csv and dropped_rows > 0:
+        export_dropped_path = Path(str(export_dropped_csv))
+        export_dropped_path.parent.mkdir(parents=True, exist_ok=True)
+        dropped_df_export.to_csv(export_dropped_path, index=False)
+        logger.info(f"Exported dropped-row report to: {export_dropped_path}")
+
     if dropped_rows > 0:
         spectra = spectra[valid_row_mask]
         targets = targets[valid_row_mask]

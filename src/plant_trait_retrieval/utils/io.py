@@ -47,7 +47,7 @@ def load_dataset(cfg: DictConfig) -> Tuple[np.ndarray, np.ndarray, List[str], Li
     else:
         non_spectra = [c for c in all_cols if c not in spectra_cols]
         # Drop domain / metadata columns that are not traits
-        skip = {"dataset", "site", "id", "index"}
+        skip = {"dataset", "site", "id", "index", "species", "tool", "sensor", "landcover"}
         trait_cols = [c for c in non_spectra if c.lower() not in skip][:n_traits]
 
     assert len(spectra_cols) == n_bands, (

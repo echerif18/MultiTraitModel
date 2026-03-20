@@ -1,0 +1,45 @@
+defaults:
+  - ssl_benchmark
+  - _self_
+
+project:
+  name: "study4-ssl-mae-vs-baseline"
+  seed: 42
+
+experiment:
+  output_dir: "results/experiments/study4_ssl_mae_vs_baseline"
+  unlabeled_data_path: "data/processed/unlabeled_1721.csv"
+  methods: ["supervised_effnet", "mae_linear_probe", "mae_finetune"]
+  ssl:
+    mae_emb_dim: 256
+    mask_ratio: 0.4
+    pretrain_epochs: 30
+    pretrain_batch_size: 256
+    pretrain_lr: 0.001
+    linear_probe_alpha: 1.0
+    finetune_epochs: 60
+
+data:
+  data_path: "data/processed/DB_50_Meta_EC_with_locations_clean1721.csv"
+  use_wavelength_range: true
+  spectra_wl_start: 400
+  spectra_wl_end: 2450
+  n_spectra_bands: 1721
+  n_traits: 20
+
+model:
+  input_length: 1721
+  n_outputs: 20
+
+training:
+  epochs: 150
+  batch_size: 64
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-4
+  loss:
+    name: "huber"
+    delta: 1.0
+
+logging:
+  wandb:
+    enabled: false

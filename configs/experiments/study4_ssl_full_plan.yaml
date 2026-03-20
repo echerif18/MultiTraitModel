@@ -1,0 +1,19 @@
+# Planning config to track MAE + legacy GAN/AE-RTM runs together.
+# MAE runs via plant_trait_retrieval.experiments.ssl_benchmark.
+# GAN / AE-RTM currently run from the legacy HyspectraSSL repo.
+
+defaults:
+  - study4_ssl_mae_vs_baseline
+  - _self_
+
+experiment:
+  comparison_table_out: "results/experiments/study4_ssl_full_comparison.csv"
+  legacy_methods:
+    gan:
+      repo_path: "/home/echerif/ironhack/HyspectraSSL"
+      command: "python scripts/Gan_main_unlabeled.py"
+      expected_metrics_file: "notebooks/Evaluation_Gan.ipynb"
+    ae_rtm:
+      repo_path: "/home/echerif/ironhack/HyspectraSSL"
+      command: "python scripts/AE_RTM_main_unlabeled.py"
+      expected_metrics_file: "notebooks/Evaluation_AE_RTM.ipynb"

@@ -1,0 +1,62 @@
+defaults:
+  - base
+  - _self_
+
+project:
+  name: "full-train-1522"
+  seed: 42
+
+data:
+  data_path: "data/processed/DB_50_Meta_EC_with_locations_clean1522.csv"
+  use_wavelength_range: true
+  spectra_wl_start: 400
+  spectra_wl_end: 2450
+  spectra_cols_start: 0
+  n_spectra_bands: 1522
+  n_traits: 20
+  trait_names:
+    - "Anth_area_ug_cm2"
+    - "Boron_area_mg_cm2"
+    - "C_area_mg_cm2"
+    - "Ca_area_mg_cm2"
+    - "Car_area_ug_cm2"
+    - "Cellulose_mg_cm2"
+    - "Chl_area_ug_cm2"
+    - "Cu_area_mg_cm2"
+    - "EWT_mg_cm2"
+    - "Fiber_mg_cm2"
+    - "LAI_m2_m2"
+    - "LMA_g_m2"
+    - "Lignin_mg_cm2"
+    - "Mg_area_mg_cm2"
+    - "Mn_area_mg_cm2"
+    - "NSC_mg_cm2"
+    - "N_area_mg_cm2"
+    - "P_area_mg_cm2"
+    - "Potassium_area_mg_cm2"
+    - "S_area_mg_cm2"
+
+model:
+  name: "efficientnet1d_b0"
+  input_length: 1522
+  n_outputs: 20
+  dropout_rate: 0.2
+  drop_connect_rate: 0.2
+
+training:
+  epochs: 200
+  batch_size: 64
+  learning_rate: 2.0e-4
+  weight_decay: 5.0e-5
+  scheduler: "plateau"
+  patience: 20
+  loss:
+    name: "huber"
+    delta: 0.7
+  mixed_precision: true
+  full_train_val_fraction: 0.1
+  full_train_output_dir: "results/full_train_1522"
+
+logging:
+  wandb:
+    enabled: false

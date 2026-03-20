@@ -64,8 +64,10 @@ def compute_metrics(
         mae = float(mean_absolute_error(yt, yp))
         # r2_score needs at least 2 samples
         r2 = float(r2_score(yt, yp)) if yt.size > 1 else np.nan
-        std = float(np.std(yt))
-        nrmse = rmse / std if std > 0 else np.nan
+        q95 = float(np.nanquantile(yt, 0.95))
+        q05 = float(np.nanquantile(yt, 0.05))
+        denom = q95 - q05
+        nrmse = rmse / denom if denom > 0 else np.nan
         bias = float(np.mean(yp - yt))
 
         records.append(
@@ -131,9 +133,9 @@ def eval_metrics_table(
             continue
 
         rmse = float(np.sqrt(mean_squared_error(yt, yp)))
-        q99 = np.nanquantile(np.array(yt), 0.99)
-        q01 = np.nanquantile(np.array(yt), 0.01)
-        denom = q99 - q01
+        q95 = np.nanquantile(np.array(yt), 0.95)
+        q05 = np.nanquantile(np.array(yt), 0.05)
+        denom = q95 - q05
         nrmse_percent = float((rmse * 100.0 / denom) if denom != 0 else np.nan)
         # Avoid scipy warning on constant arrays; correlation is undefined there.
         if np.nanstd(np.array(yt)) == 0 or np.nanstd(np.array(yp)) == 0:

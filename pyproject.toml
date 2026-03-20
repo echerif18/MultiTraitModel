@@ -23,6 +23,12 @@ tqdm = ">=4.66.0"
 rich = ">=13.7.0"
 pyyaml = ">=6.0"
 h5py = ">=3.10.0"
+plotly = ">=5.24.0"
+gradio = ">=5.8.0"
+faiss-cpu = ">=1.8.0"
+shap = ">=0.45.0"
+rasterio = ">=1.3.0"
+folium = ">=0.17.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8.0.0"
@@ -34,8 +40,18 @@ ipykernel = ">=6.29.0"
 jupyter = ">=1.0.0"
 
 [tool.poetry.scripts]
-train = "plant_trait_retrieval.training.train:main"
+train-cv = "plant_trait_retrieval.training.train_cv:main"
+train-transfer = "plant_trait_retrieval.training.train_transfer:main"
+train-full = "plant_trait_retrieval.training.train_full:main"
 evaluate = "plant_trait_retrieval.evaluation.evaluate:main"
+baseline-exp = "plant_trait_retrieval.experiments.baseline:main"
+uncertainty-exp = "plant_trait_retrieval.experiments.uncertainty_eval:main"
+uncertainty-scene-infer = "plant_trait_retrieval.experiments.uncertainty_scene_infer:main"
+ssl-benchmark = "plant_trait_retrieval.experiments.ssl_benchmark:main"
+shap-eval = "plant_trait_retrieval.experiments.shap_eval:main"
+app-baseline-uncertainty = "plant_trait_retrieval.apps.gradio_baseline_uncertainty:launch"
+app-model-zoo = "plant_trait_retrieval.apps.gradio_model_zoo:launch"
+app-disun-scene = "plant_trait_retrieval.apps.gradio_disun_scene:launch"
 
 [tool.black]
 line-length = 100

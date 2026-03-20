@@ -1,0 +1,53 @@
+You ae an expert ML engineer, can you help me to improve the code here to make it modular code, use poetry port package management and add slurm codto train the data.
+
+https://gitlab.com/eya95/multi-traitretrieval
+
+The code are in these clones projects:
+- ironhack/multi-traitretrieval
+- ironhack/multiTraitPredictions
+- ironhack/HyspectraSSL
+- ironhack/Multi_trait_Uncertainty
+
+I want you to merge these projects in one modular project:
+1- make the baseline for the forst study: test 1D effitient net B0 with sparse data, with filled data and with single CNN model andl test against PLSR models. This is the paper describing this: https://www.sciencedirect.com/science/article/abs/pii/S0034425723001311?dgcid=author >> for the baseline I want to have hyperpyrameter tyning cross validation to set the best hyperparameters for the Effitint net model
+
+2- Test the base line model uncertainty Multi_trait_Uncertainty with a distance based approach
+3 - make a gradio app for 1 and 2 (get inspired from multiTraitPredictions) but I want a sophestisticated method to visualize the prefidction ina map and overlay  the uncertainty map. This is the paper: https://egusphere.copernicus.org/preprints/2025/egusphere-2025-1284/
+4- Test self supervised methods: HyspectraSSL >> compare different methods with the baseline >> please use the baseline form the first study, This is the paper describing everything: https://arxiv.org/pdf/2507.06806; https://neurips.cc/virtual/2025/loc/san-diego/poster/121449
+5- create a Gradio app to choose the model and make predictions >> make it flexible and explicit about the sensor settings (the range of wavelengths) >> Show case the flexibility of the MAE
+
+
+So the task here is:So this is a deep learning project for estimating plant trait from hyperspectral data.
+
+- we have a vector regression: multi task/ output regression
+- custom Hubert loss function
+- power scaler for target values to have a similar gaussian distribution
+- Use pytorch for all 
+- include best MLops practices: wandb, modular code and more 
+
+
+
+we have two data types: labelled and unlebelled data
+the data consists of spectra from 400-2450  : 1721  bands and the labelled data has 20 traits (could be 6 as a subset)
+
+Include an eda t inspecg the data
+
+
+So this is a deep learning project for estimating plant trait from hyperspectral data.
+This version used tensor flow and keras to build the model and experiments: it uses 1d  effitient net B0 >> can you convert it to pytorch?
+Also integrate logging with wandb
+
+The data is tabular and I have created in the repo CV splitting: The target is a vector of 20mparameters and the input are the 1d spectra of 1721 lengths
+
+
+Can you reproduce the experiements for 5CV validation and for transferability
+
+This is the paper describing this: https://www.sciencedirect.com/science/article/abs/pii/S0034425723001311?dgcid=author
+- we have a vector regression
+- custom Hubert loss function
+- power scaler for target values to have a similar gaussian distribution
+- Use pytorch
+- include best MLops practices
+
+
+After creating the new code give me a detailed description to run the model
